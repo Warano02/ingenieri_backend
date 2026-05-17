@@ -1,3 +1,4 @@
+const { ClassroomMidle } = require("./src/api/middleware/messages")
 const { protect, adminOnly } = require("./src/api/middleware/protect")
 const connectDB = require("./src/config/db")
 const cors = require("cors")
@@ -9,11 +10,12 @@ app
     .use(cors({ origin: true, credentials: true }))
     .use(require("express").json())
     .use("/auth", require("./src/api/routes/auth.routes"))
-    .use("/seeds",require("./src/seeds/routes"))
+    .use("/seeds", require("./src/seeds/routes"))
     .get("/", (req, res) => res.json({ err: false, msg: "Welcome to the API of classroom of the elite ", data: [] }))
     .use(protect)
     .use("/course", require("./src/api/routes/course.routes"))
     .use("/classroom", require("./src/api/routes/classroom.routes"))
+    .use("/messages/:id", ClassroomMidle, require("./src/api/routes/messages.routes"))
     .use(adminOnly)
     .use("/admin", require("./src/api/routes/admin.routes"))
 
