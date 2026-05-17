@@ -1,3 +1,4 @@
+require("dotenv").config()
 const { signToken } = require("../../lib/jwt");
 const Classrooms = require("../../models/classroom.model");
 const Enrollment = require('../../models/enrollment.model');
@@ -10,6 +11,7 @@ const cookieOptions = {
     maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 exports.signup = async (req, res) => {
+    // console.log(req.body)
     const { name, email, password, matricule, classId } = req.body;
     if (!name || !email || !password || !matricule || !classId) return res.status(400).json({ error: true, message: "All fields are required" });
     const existingUser = await User.findOne({ email }).lean();
@@ -18,7 +20,7 @@ exports.signup = async (req, res) => {
     if (!classExist) return res.status(404).json({ error: true, message: "Classroom not exist yet !" })
 
     try {
-        const { data } = await axios.get(`https://mock-api-university.onrender.com/student?matricule=${matricule}`)
+        const { data } = await axios.get(`${process.env.MOCK_API}/student?matricule=${matricule}`)
         const { name: n, email: em, level, sex, birthdate, school } = data.user
         if (n.toLowerCase() !== name.toLowerCase() || em.toLowerCase() !== email.toLowerCase()) return res.status(400).json({ error: true, message: "Name or email does not match the matricule" });
 
@@ -69,11 +71,11 @@ exports.confirmEmail = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        console.log("trying to login ....")
+        // console.log(req.body)
         const { identifier, password } = req.body;
         if (!identifier || !password) return res.status(400).json({ error: true, msg: "All fields are required" })
         const user = await User.findOne({ $or: [{ email: identifier }, { matricule: identifier }] });
-        if (!user) return res.status(400).json({ error: true, msg: "Invalid credentials" })
+        if (!user) return res.status(404).json({ error: true, msg: "Invalid credentials" })
         const isMatch = await user.comparePassword(password);
         if (!isMatch) return res.status(400).json({ error: true, msg: "Invalid credentials" })
         //generate token and send response
@@ -81,9 +83,10 @@ exports.login = async (req, res) => {
         const token = signToken({ id: user._id, email: user.email, role: user.role });
 
         res.cookie('token', token, cookieOptions);
-        
-        res.status(200).json({ error: false, message: "Login successful", token });
+
+        res.status(200).json({ error: false, message: "Login successful", user: { name: user.name, email: user.email, role: user.role, avatar: user.avatar, matricule: user.matricule, isActive: user.isActive } });
     } catch (e) {
+        console.log(e)
         res.status(500).json({ error: true, message: "Internal server error" });
     }
 }

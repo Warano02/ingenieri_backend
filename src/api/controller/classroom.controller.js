@@ -13,6 +13,8 @@ exports.createClassrrom = async (req, res) => {
         teacher: req.user.id,
         joinCode: `${new Date().getFullYear() - 2000}${count > 1000 ? "CB" : count > 2000 ? "CC" : "CA"}${count > 100 ? count : count < 10 ? "00".concat(count) : "0".concat(count)}${name.split(" ")[0].slice(0, 2).toUpperCase()}`
     })
+    
+    console.log(cr)
 
     res.json({
         success: true, msg: "Classroom created successfully!", data: cr,

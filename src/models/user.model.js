@@ -36,7 +36,6 @@ const userSchema = new mongoose.Schema(
 
         matricule: {
             type: String,
-            required: true,
             trim: true,
         },
         school: {
@@ -48,7 +47,6 @@ const userSchema = new mongoose.Schema(
 
         birthDate: {
             type: Date,
-            required: true,
         },
 
         isActive: {
