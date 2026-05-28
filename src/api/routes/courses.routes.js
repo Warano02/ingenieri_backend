@@ -19,7 +19,7 @@ router.post("/:courseId/modules", teacherOnly, createModule)
 router.patch("/modules/:moduleId", teacherOnly, updateModule)
 router.delete("/modules/:moduleId", teacherOnly, deleteModule)
 router.get("/modules/:moduleId/lessons", teacherOnly, getLessons)
-router.post("/modules/:moduleId/lessons", teacherOnly, createLesson)
+router.post("/modules/:moduleId/lesson", teacherOnly, createLesson)
 router.patch("/lessons/:lessonId", teacherOnly, updateLesson)
 router.delete("/lessons/:lessonId", teacherOnly, deleteLesson)
 

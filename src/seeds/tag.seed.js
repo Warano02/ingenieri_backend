@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const Tag = require("../models/tag.model");
 
 const tags = [
@@ -72,9 +71,7 @@ const tags = [
 
 const seedTags = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
-
-        console.log("Connected to DB");
+        console.log("-------- Start tag sedding...- -----------------");
 
         for (const tag of tags) {
             const slug = tag.name
@@ -100,11 +97,10 @@ const seedTags = async () => {
         }
 
         console.log(" Tag seeding completed");
-        process.exit();
+
     } catch (error) {
         console.error(" Seed error:", error);
-        process.exit(1);
     }
 };
 
-seedTags();
+module.exports = seedTags

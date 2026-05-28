@@ -382,16 +382,20 @@ exports.getLessons = async (req, res) => {
 
     const lessons = await Lesson.find({ module: moduleId }).sort({ order: 1 }).lean()
 
-    const formatted = lessons.map((l) => ({
-      _id: l._id,
-      title: l.title,
-      order: l.order,
-      estimatedDuration: l.estimatedDuration,
-      hasQuiz: !!l.quiz,
-    }))
+    const f = []
 
-    await setCache(cacheKey, formatted)
-    res.json({ success: true, lessons: formatted })
+
+    for (const lesson of lessons) {
+      if (lesson.quiz) {
+        const quiz = await Quiz.findById(lesson.quiz).select("title content").lean()
+        f.push({ type: "quiz", _id: quiz._id, title: quiz.title, questionsCount: quiz.content.length })
+      } else {
+        f.push({ type: "lesson", _id: lesson._id, title: lesson.title, duration: lesson.estimatedDuration })
+      }
+    }
+
+    await setCache(cacheKey, f)
+    res.json({ success: true, lessons: f })
 
   } catch (err) {
     console.error("getLessons error:", err)
@@ -403,7 +407,6 @@ exports.createLesson = async (req, res) => {
   try {
     const { moduleId } = req.params
     const teacherId = req.user.id
-
     const mod = await CourseModule.findById(moduleId).populate("course").exec()
     if (!mod) return res.status(404).json({ success: false, message: "Module not found." })
     if (mod.course.teacher.toString() !== teacherId.toString()) {
@@ -415,8 +418,9 @@ exports.createLesson = async (req, res) => {
 
     const lesson = await Lesson.create({
       module: moduleId,
+      attachment: req.body.attachment,
       title: req.body.title || "New Lesson",
-      content: "",
+      content: req.body.content,
       order,
       estimatedDuration: req.body.estimatedDuration || 10,
     })

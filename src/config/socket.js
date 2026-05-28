@@ -1,28 +1,19 @@
+require("dotenv").config()
 const { Server } = require("socket.io");
 
+const registerSocketHandlers = require("../socket");
+
 let io;
-const userSockets = new Map(); // { userId: socketId}
-const userActivities = new Map(); // {userId: activity}
 
 const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: ["http://localhost:3000"],
+      origin: [process.env.CLIENT_URL],
       credentials: true,
     },
   });
 
-  io.on("connection", (socket) => {
-
-    socket.on("join", (userId) => {
-      socket.join(userId);
-      console.log("user trying to join ", userId)
-    });
-
-    socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
-    });
-  });
+  registerSocketHandlers(io);
 
   return io;
 };
@@ -31,6 +22,7 @@ const getIO = () => {
   if (!io) {
     throw new Error("Socket.io not initialized");
   }
+
   return io;
 };
 
