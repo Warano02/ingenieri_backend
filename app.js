@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+require("./src/jobs/live.job");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -19,6 +19,7 @@ app.use(cors({ origin: ["http://localhost:3001"], credentials: true }))
     .use("/p", require("./src/api/routes/public.routes"))
     .use(protect)
     .use("/files", require("./src/api/routes/files.routes"))
+    .use("/lives", require("./src/api/routes/lives.routes"))
     .use("/u", require("./src/api/routes/user.routes"))
     .use("/c", require("./src/api/routes/courses.routes"))
     .use("/cr", require("./src/api/routes/classroom.routes"))
