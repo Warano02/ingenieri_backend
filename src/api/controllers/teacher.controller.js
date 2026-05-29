@@ -26,8 +26,19 @@ exports.pendingEnrollment = async (req, res) => {
         const teacher = req.user.id
         const cr = await ClassRoom.find({ teacher }).select("name").lean()
 
-        const enrollment = await Enrollment.find({ classroom: { $in: cr.map(e => e._id) }, status: "pending" }).select("user joinedAt classroom").populate("user", "name email avatar").lean()
-        return res.json({ error: false, enrollment })
+        let result = []
+        for (const classroom of cr) {
+            const enrollments = await Enrollment.find({ classroom: classroom._id, status: "pending" }).select("user joinAt").populate("user", "-_id name avatar email").lean()
+            enrollments.forEach(enrollment => {
+                result.push({
+                    id: enrollment.id,
+                    name: enrollment.user.name,
+                    avatar: enrollment.user.avatar,
+                    classroom: classroom.name
+                })
+            })
+        }
+        return res.json({ error: false, enrollments: result })
     } catch (e) {
         console.log(e)
         res.status(500).json({ error: true, message: "Interal Server Error !" })
