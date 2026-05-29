@@ -1,5 +1,6 @@
 const ClassRoom = require("../../models/classroom.model")
 const Enrollment = require('../../models/enrollment.model');
+const Course = require('../../models/course.model')
 
 exports.createClassrrom = async (req, res) => {
     const { name, description, slogan } = req.body
@@ -101,5 +102,18 @@ exports.leftClassroom = async (req, res) => {
         res.json({ error: false, message: "You have been left the classroom successfully" })
     } catch (e) {
         res.status(500).json({ error: true, message: "Internal Server Error" })
+    }
+}
+
+exports.getCourses = async (req, res) => {
+    try {
+        const cr = req.params?.classId
+        if (!cr) return res.status(400).json({ error: true, msg: "Please provide the classroom Id" })
+        const courses = await Course.find({ classroom: cr }).select("interests favicon objectives description title isPublic").populate("interests").select("name slug category description").lean()
+        const students = await Enrollment.countDocuments({ classroom: cr })
+        res.json({ courses, stat: { courses: courses.length, students: Math.max(students - 1, 0), } })
+    } catch (e) {
+        console.log("error occured while trying to get classroom courses and stat ", e)
+        res.status(500).json({ error: true, msg: "Internal Server Error" })
     }
 }
