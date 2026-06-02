@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
 
         onboarding: {
             type: Number,
-            default: 1,
+            default: 6,
             required: true,
         },
 
@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
 
         isEmailConfirmed: {
             type: Boolean,
-            default: false,
+            default: true,
         },
     },
     {
