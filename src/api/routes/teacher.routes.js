@@ -1,6 +1,7 @@
 const express = require('express');
 const { getMyClassRooms } = require('../controllers/teacher.controller');
 const enrollmentModel = require('../../models/enrollment.model');
+const Classrooms = require("../../models/classroom.model")
 const { getTeacherCourse } = require('../controllers/courses.controller');
 const router = express.Router();
 
@@ -9,7 +10,7 @@ router.get("/courses", getTeacherCourse)
 
 router.get('/can_make_private', async (req, res) => {
     try {
-        const classrooms = await enrollmentModel.find({ user: req.user.id, status: "active" }).populate("classroom", "name").lean()
+        const classrooms = await Classrooms.find({ teacher: req.user.id }).select("name").lean()
         res.json({ error: false, classrooms })
     } catch (e) {
         console.log(e)
