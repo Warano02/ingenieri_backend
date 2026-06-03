@@ -31,7 +31,7 @@ exports.pendingEnrollment = async (req, res) => {
             const enrollments = await Enrollment.find({ classroom: classroom._id, status: "pending" }).select("user joinAt").populate("user", "-_id name avatar email").lean()
             enrollments.forEach(enrollment => {
                 result.push({
-                    id: enrollment.id,
+                    id: enrollment._id,
                     name: enrollment.user.name,
                     avatar: enrollment.user.avatar,
                     classroom: classroom.name

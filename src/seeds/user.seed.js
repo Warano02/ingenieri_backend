@@ -17,9 +17,9 @@ async function SeedUsers() {
     for (const user of users) {
         const exists = await User.findOne({ email: user.email });
         if (!exists) {
-            await User.create(user);
-            await Settings.create({ user: user._id });
-            await createSystemCollections(user._id)
+            const u = await User.create(user);
+            await Settings.create({ user: u._id });
+            await createSystemCollections(u._id)
             console.log(`++++++++++++ User ${user.name} created successffully  ! +++++++++++`)
         } else {
             console.log(`---------------- User ${user.name} already exist -----------------`)
