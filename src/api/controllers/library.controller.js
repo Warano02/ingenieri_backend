@@ -32,7 +32,7 @@ const getCollection = async (req, res) => {
 const getSystemCollection = async (req, res) => {
     try {
         const verb = req.params?.verb
-        if (!verb || !["favorites", "wl"].includes(verb.toLowerCase())) return res.status(400).json({ message: "Please provide correct system verbs !" })
+        if (!verb || !["favorites", "wl", "ip"].includes(verb.toLowerCase())) return res.status(400).json({ message: "Please provide correct system verbs !" })
         const name = verb == "favorites" ? "Favorites"
             : verb == "wl" ? "Watch Later"
                 : verb == "ip" ? "In Progress"

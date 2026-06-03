@@ -7,6 +7,15 @@ const router = express.Router();
 router.get("/classrooms", getMyClassRooms)
 router.get("/courses", getTeacherCourse)
 
+router.get('/can_make_private', async (req, res) => {
+    try {
+        const classrooms = await enrollmentModel.find({ user: req.user.id, status: "active" }).populate("classroom", "name").lean()
+        res.json({ error: false, classrooms })
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({ error: true, message: "Internal Server Error!" })
+    }
+})
 
 
 router.patch("/dec_enrollment", async (req, res) => {
